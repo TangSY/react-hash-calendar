@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import ReactHashCalendar from './components/datetimePicker';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ReactHashCalendar />
   </React.StrictMode>,
   document.getElementById('root')
 );
