@@ -12,6 +12,6 @@ deploy_stage:
   stage: deploy
   script:
     - chmod +x ci/deploy_stage.sh
-    - ci/deploy_stage.sh
+    - ./ci/deploy_stage.sh
   only:
     - master
