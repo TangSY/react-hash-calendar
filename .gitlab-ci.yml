@@ -12,7 +12,7 @@ deploy_stage:
   stage: deploy
   script:
     - chmod +x ci/deploy_stage.sh
-    - ll
+    - ls
     - rm -rf react-hash-calendar
     - git clone git@127.0.0.1:HashTang/react-hash-calendar.git
     - cd react-hash-calendar
