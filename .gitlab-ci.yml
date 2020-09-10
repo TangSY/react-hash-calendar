@@ -12,15 +12,6 @@ deploy_stage:
   stage: deploy
   script:
     - chmod +x ci/deploy_stage.sh
-    - ls
-    - rm -rf react-hash-calendar
-    - git clone git@127.0.0.1:HashTang/react-hash-calendar.git
-    - cd react-hash-calendar
-    - npm install
-    - npm run build
-    - cd build
-    - ls
-    - tar -zcvf calendar.tar.gz *
-    - mv calendar.tar.gz /
+    - ci/deploy_stage.sh
   only:
     - master
