@@ -1,6 +1,7 @@
 import React from 'react';
 import Canlendar from '../calendar';
 import TimePicker from '../timePicker';
+import classNames from 'classnames';
 import { formatDate } from '../../utils/util';
 // import languageUtil from '../../language';
 
@@ -82,10 +83,9 @@ class ReactHashCalendar extends React.Component<
   render() {
     return (
       <div
-        className={[
-          'hash-calendar',
-          this.props.model === 'inline' ? 'calendar_inline' : '',
-        ].join(' ')}
+        className={classNames('hash-calendar', {
+          calendar_inline: this.props.model === 'inline',
+        })}
       >
         <Canlendar />
         <TimePicker />

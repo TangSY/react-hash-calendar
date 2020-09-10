@@ -1,0 +1,16 @@
+stages:
+  - deploy
+
+deploy_develop:
+  stage: deploy
+  script:
+    - ci/deploy_develop.sh
+  only:
+    - develop
+
+deploy_stage:
+  stage: deploy
+  script:
+    - ci/deploy_stage.sh
+  only:
+    - master
