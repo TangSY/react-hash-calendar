@@ -80,6 +80,31 @@ class ReactHashCalendar extends React.Component<
     });
   }
 
+  componentDidUpdate(prevProps: Props) {
+    console.log(prevProps, 'prevProps');
+    const { pickerType, isShowAction } = prevProps;
+    if (pickerType === 'time') {
+      this.showTime();
+    }
+    if (!isShowAction) {
+      this.setState({ calendarTitleHeight: 0 });
+    } else {
+      setTimeout(() => {
+        this.setState({
+          // calendarTitleHeight: this.refs.calendarTitle
+          //   ? this.refs.calendarTitle.offsetHeight
+          //   : 0,
+          calendarTitleHeight: 0,
+        });
+      });
+    }
+  }
+
+  // 显示时间选择控件
+  public showTime() {
+    this.setState({ isShowCalendar: false });
+  }
+
   render() {
     return (
       <div
