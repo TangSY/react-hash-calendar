@@ -1,9 +1,10 @@
 import React from 'react';
-import Canlendar from '../calendar';
+import Calendar from '../calendar';
 import TimePicker from '../timePicker';
 import classNames from 'classnames';
-// import { formatDate } from '../../utils/util';
-// import languageUtil from '../../language';
+import { formatDate } from '../../utils/util';
+import languageUtil from '../../language';
+import './style.styl';
 
 const defaultProps = {
   model: 'inline',
@@ -14,12 +15,19 @@ const defaultProps = {
   showTodayButton: true, // 是否显示返回今日按钮
   defaultDatetime: new Date(), // 默认时间
   markDate: [], // 日期下面的标记
-  disabledDate: () => false, // 禁用的日期
+  disabledDate: (date: Date) => false, // 禁用的日期
   lang: 'CN', // 使用的语言包
 };
 
 const state = {
-  language: {}, // 使用的语言包
+  language: {
+    CONFIRM: '',
+    TODAY: '',
+    WEEK: [''],
+    MONTH: [''],
+    DEFAULT_DATE_FORMAT: 'YY年MM月DD日',
+    DEFAULT_TIME_FORMAT: 'hh:mm',
+  },
   checkedDate: {
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
@@ -29,12 +37,19 @@ const state = {
   }, // 被选中的日期
   isShowCalendar: false, // 是否显示日历选择控件
   isShowDatetimePicker: false, // 是否显示日历组件
-  calendarBodyHeight: 0, // 日历内容的高度
-  calendarTitleHeight: 0, // 日历组件标题高度
+  calendarBodyHeight: 400, // 日历内容的高度
+  calendarContentHeight: 3000, // 日历内容的高度
+  calendarTitleHeight: 100, // 日历组件标题显示高度
+  calendarTitleRefHeight: 100, // 日历组件标题实际高度
   firstTimes: true, // 第一次触发
 };
 
-type Props = Partial<typeof defaultProps>;
+type Props = {
+  lang: 'CN' | 'EN';
+  actionSlot?: React.ReactNode;
+  todaySlot?: React.ReactNode;
+  confirmSlot?: React.ReactNode;
+} & Partial<typeof defaultProps>;
 type State = typeof state;
 
 class ReactHashCalendar extends React.Component<
@@ -47,56 +62,31 @@ class ReactHashCalendar extends React.Component<
   public state = state;
 
   componentDidMount() {
-    const { model } = this.props;
+    const { model, lang } = this.props;
     if (model === 'inline') {
       this.setState({
         isShowDatetimePicker: true,
       });
     }
 
-    // this.setState({ language: languageUtil[lang.toUpperCase()] }); TODO 类型转换有问题
-    this.setState({
-      language: {
-        CONFIRM: '确定',
-        TODAY: '今天',
-        WEEK: ['日', '一', '二', '三', '四', '五', '六'],
-        MONTH: [
-          '1月',
-          '2月',
-          '3月',
-          '4月',
-          '5月',
-          '6月',
-          '7月',
-          '8月',
-          '9月',
-          '10月',
-          '11月',
-          '12月',
-        ],
-        DEFAULT_DATE_FORMAT: 'YY年MM月DD日',
-        DEFAULT_TIME_FORMAT: 'hh:mm',
-      },
-    });
+    this.setState({ language: languageUtil[lang] });
   }
 
   componentDidUpdate(prevProps: Props) {
-    console.log(prevProps, 'prevProps');
     const { pickerType, isShowAction } = prevProps;
-    if (pickerType === 'time') {
+    if (pickerType !== this.props.pickerType && pickerType === 'time') {
       this.showTime();
     }
-    if (!isShowAction) {
-      this.setState({ calendarTitleHeight: 0 });
-    } else {
-      setTimeout(() => {
-        this.setState({
-          // calendarTitleHeight: this.refs.calendarTitle
-          //   ? this.refs.calendarTitle.offsetHeight
-          //   : 0,
-          calendarTitleHeight: 0,
+    if (isShowAction !== this.props.isShowAction) {
+      if (!isShowAction) {
+        this.setState({ calendarTitleHeight: 0 });
+      } else {
+        setTimeout(() => {
+          this.setState({
+            calendarTitleHeight: this.state.calendarTitleRefHeight,
+          });
         });
-      });
+      }
     }
   }
 
@@ -105,17 +95,124 @@ class ReactHashCalendar extends React.Component<
     this.setState({ isShowCalendar: false });
   }
 
+  close = () => {};
+
+  showCalendar = () => {};
+
+  today = () => {};
+
+  confirm = () => {};
+
+  // 小于10，在前面补0
+  fillNumber = (val: number) => (val > 9 ? val : '0' + val);
+
+  calendarTitleRef = (ref: HTMLDivElement): void => {
+    const height = ref.offsetHeight;
+    this.setState({
+      calendarTitleRefHeight: height,
+    });
+  };
+
   render() {
-    return (
-      <div
-        className={classNames('hash-calendar', {
-          calendar_inline: this.props.model === 'inline',
+    const {
+      model,
+      isShowAction,
+      disabledDate,
+      showTodayButton,
+      pickerType,
+      todaySlot,
+      actionSlot,
+      confirmSlot,
+    } = this.props;
+
+    const {
+      calendarContentHeight,
+      isShowDatetimePicker,
+      isShowCalendar,
+      checkedDate,
+      language,
+    } = this.state;
+
+    const dateNode: React.ReactNode = (
+      <span
+        className={classNames('calendar_title_date_year', {
+          calendar_title_date_active: isShowCalendar,
         })}
+        onClick={this.showCalendar}
       >
-        <Canlendar />
-        <TimePicker />
+        {formatDate(
+          `${checkedDate.year}/${checkedDate.month + 1}/${checkedDate.day}`,
+          language.DEFAULT_DATE_FORMAT
+        )}
+      </span>
+    );
+
+    const timeNode: React.ReactNode = (
+      <span
+        className={classNames('calendar_title_date_time', {
+          calendar_title_date_active: !isShowCalendar,
+        })}
+        onClick={this.showTime}
+      >
+        {formatDate(
+          `${checkedDate.year}/${checkedDate.month + 1}/${
+            checkedDate.day
+          } ${this.fillNumber(checkedDate.hours)}:${this.fillNumber(
+            checkedDate.minutes
+          )}`,
+          language.DEFAULT_TIME_FORMAT
+        )}
+      </span>
+    );
+
+    const actionNode: React.ReactNode = (
+      <div>
+        <div className="calendar_title_date">
+          {pickerType !== 'time' ? dateNode : ''}
+          {pickerType !== 'date' ? timeNode : ''}
+        </div>
+        {showTodayButton ? (
+          <div
+            className={classNames('calendar_confirm', {
+              today_disable: disabledDate(new Date()),
+            })}
+            onClick={this.today}
+          >
+            {todaySlot || language.TODAY}
+          </div>
+        ) : null}
+        {model === 'dialog' ? (
+          <div className="calendar_confirm" onClick={this.confirm}>
+            {confirmSlot || language.CONFIRM}
+          </div>
+        ) : null}
       </div>
     );
+
+    return isShowDatetimePicker ? (
+      <div
+        className={classNames('hash-calendar', {
+          calendar_inline: model === 'inline',
+        })}
+        style={{
+          height: `${model === 'inline' ? calendarContentHeight : undefined}px`,
+        }}
+        onClick={this.close}
+      >
+        <div
+          className="calendar_content"
+          style={{ height: `${calendarContentHeight}px` }}
+        >
+          {isShowAction ? (
+            <div className="calendar_title" ref={this.calendarTitleRef}>
+              {actionSlot || actionNode}
+            </div>
+          ) : null}
+          <Calendar {...this.props} show={isShowCalendar} />
+          <TimePicker />
+        </div>
+      </div>
+    ) : null;
   }
 }
 

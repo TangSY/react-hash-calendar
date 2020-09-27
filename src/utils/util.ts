@@ -2,7 +2,7 @@
  * @Description: 各种工具类
  * @Author: TSY
  * @Date: 2020-09-08 23:13:30
- * @LastEditTime: 2020-09-09 21:36:46
+ * @LastEditTime: 2020-09-23 20:54:15
  */
 
 /**
@@ -24,7 +24,11 @@ export const checkPlatform = function () {
  * @param format {string}
  * @returns {string}
  */
-export let formatDate = (time: string, format: string, lang = 'CN'): string => {
+export let formatDate = (
+  time: string,
+  format?: string,
+  lang = 'CN'
+): string => {
   lang = lang.toUpperCase();
   let language = require('../language').default[lang] || {};
   format =
