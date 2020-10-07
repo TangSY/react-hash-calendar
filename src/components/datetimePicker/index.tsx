@@ -35,7 +35,7 @@ const state = {
     hours: new Date().getHours(),
     minutes: new Date().getMinutes(),
   }, // 被选中的日期
-  isShowCalendar: false, // 是否显示日历选择控件
+  isShowCalendar: true, // 是否显示日历选择控件
   isShowDatetimePicker: false, // 是否显示日历组件
   calendarBodyHeight: 400, // 日历内容的高度
   calendarContentHeight: 3000, // 日历内容的高度
@@ -45,6 +45,7 @@ const state = {
 };
 
 type Props = {
+  model: 'inline' | 'dialog';
   lang: 'CN' | 'EN';
   actionSlot?: React.ReactNode;
   todaySlot?: React.ReactNode;
