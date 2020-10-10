@@ -2,7 +2,7 @@
  * @Description:
  * @Author: TSY
  * @Date: 2020-09-18 22:15:06
- * @LastEditTime: 2020-09-18 22:39:20
+ * @LastEditTime: 2020-10-10 22:58:29
  */
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 // https://stackoverflow.com/questions/46176165/ways-to-get-string-literal-type-of-array-values-without-enum-overhead
@@ -24,3 +24,9 @@ export type ElementOf<T> = T extends (infer E)[]
  * https://github.com/Microsoft/TypeScript/issues/29729
  */
 export type LiteralUnion<T extends U, U> = T | (U & {});
+
+export interface IDate {
+  year: number;
+  month: number;
+  day: number;
+}

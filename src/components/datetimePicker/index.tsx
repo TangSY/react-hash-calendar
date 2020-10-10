@@ -3,6 +3,7 @@ import Calendar from '../calendar';
 import TimePicker from '../timePicker';
 import classNames from 'classnames';
 import { formatDate } from '../../utils/util';
+import { IDate } from '../../utils/type';
 import languageUtil from '../../language';
 import './style.styl';
 
@@ -35,12 +36,12 @@ const state = {
     hours: new Date().getHours(),
     minutes: new Date().getMinutes(),
   }, // 被选中的日期
-  isShowCalendar: true, // 是否显示日历选择控件
+  isShowCalendar: false, // 是否显示日历选择控件
   isShowDatetimePicker: false, // 是否显示日历组件
-  calendarBodyHeight: 400, // 日历内容的高度
-  calendarContentHeight: 3000, // 日历内容的高度
-  calendarTitleHeight: 100, // 日历组件标题显示高度
-  calendarTitleRefHeight: 100, // 日历组件标题实际高度
+  calendarBodyHeight: 0, // 日历内容的高度
+  calendarContentHeight: 0, // 日历内容的高度
+  calendarTitleHeight: 0, // 日历组件标题显示高度
+  calendarTitleRefHeight: 0, // 日历组件标题实际高度
   firstTimes: true, // 第一次触发
 };
 
@@ -50,8 +51,13 @@ type Props = {
   actionSlot?: React.ReactNode;
   todaySlot?: React.ReactNode;
   confirmSlot?: React.ReactNode;
+  slideChangeCallback?: (direction: string) => void;
+  touchStartCallback?: (e: React.TouchEvent) => void;
+  touchMoveCallback?: (e: React.TouchEvent) => void;
+  touchEndCallback?: (e: React.TouchEvent) => void;
+  dateClickCallback?: (date: Date | string) => void;
 } & Partial<typeof defaultProps>;
-type State = typeof state;
+type State = { calendarRef?: any } & typeof state;
 
 class ReactHashCalendar extends React.Component<
   Props & typeof defaultProps,
@@ -60,7 +66,7 @@ class ReactHashCalendar extends React.Component<
 > {
   static defaultProps = defaultProps;
 
-  public state = state;
+  public state: State = state;
 
   componentDidMount() {
     const { model, lang } = this.props;
@@ -71,47 +77,179 @@ class ReactHashCalendar extends React.Component<
     }
 
     this.setState({ language: languageUtil[lang] });
+
+    setTimeout(() => {
+      this.setState({ isShowCalendar: true });
+    });
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { pickerType, isShowAction } = prevProps;
-    if (pickerType !== this.props.pickerType && pickerType === 'time') {
+    const { pickerType } = prevProps;
+    const { isShowAction } = this.props;
+    const { isShowCalendar } = this.state;
+    const {
+      calendarTitleRefHeight,
+      calendarBodyHeight,
+      calendarTitleHeight,
+    } = this.state;
+
+    if (isShowCalendar && pickerType === 'time') {
       this.showTime();
     }
-    if (isShowAction !== this.props.isShowAction) {
+
+    if (calendarTitleHeight !== calendarTitleRefHeight) {
       if (!isShowAction) {
         this.setState({ calendarTitleHeight: 0 });
       } else {
-        setTimeout(() => {
-          this.setState({
-            calendarTitleHeight: this.state.calendarTitleRefHeight,
-          });
+        this.setState({
+          calendarTitleHeight: calendarTitleRefHeight,
+          calendarContentHeight: calendarTitleRefHeight + calendarBodyHeight,
         });
       }
     }
   }
 
   // 显示时间选择控件
-  public showTime() {
+  showTime = () => {
     this.setState({ isShowCalendar: false });
+  };
+
+  showCalendar = () => {
+    this.setState({ isShowCalendar: true });
+  };
+
+  show = () => {
+    this.setState({ isShowDatetimePicker: true });
+  };
+
+  close = () => {
+    this.setState({ isShowDatetimePicker: false });
+  };
+
+  formatDate(time: string, format: string) {
+    const { lang } = this.props;
+    return formatDate(time, format, lang);
   }
 
-  close = () => {};
+  today = () => {
+    const { disabledDate } = this.props;
+    if (disabledDate(new Date())) return;
 
-  showCalendar = () => {};
+    const { calendarRef } = this.state;
+    calendarRef && calendarRef.today();
+  };
 
-  today = () => {};
+  confirm = () => {
+    const { format, model, lang } = this.props;
+    const { checkedDate } = this.state;
+    let date: Date | string = new Date(
+      `${checkedDate.year}/${checkedDate.month + 1}/${checkedDate.day} ${
+        checkedDate.hours
+      }:${checkedDate.minutes}`
+    );
+    if (format) {
+      date = formatDate(date, format, lang);
+    }
+    console.log(date);
+    // this.$emit('confirm', date);
+    if (model === 'dialog') {
+      this.close();
+    }
+  };
 
-  confirm = () => {};
+  dateChange = (date: IDate) => {
+    const { checkedDate } = this.state;
+    this.setState({
+      checkedDate: {
+        ...checkedDate,
+        ...date,
+      },
+    });
+  };
+
+  heightChange = (height: number) => {
+    const { firstTimes, calendarTitleHeight } = this.state;
+    const { model } = this.props;
+    console.log(height, 'heightChange-height');
+    console.log(calendarTitleHeight, 'heightChange-calendarTitleHeight');
+    if (!firstTimes && model === 'dialog') return;
+
+    this.setState({
+      calendarBodyHeight: height,
+      calendarContentHeight: height + calendarTitleHeight,
+      firstTimes: false,
+    });
+  };
 
   // 小于10，在前面补0
   fillNumber = (val: number) => (val > 9 ? val : '0' + val);
 
   calendarTitleRef = (ref: HTMLDivElement): void => {
+    if (!ref) return;
     const height = ref.offsetHeight;
+    console.log(height, 'calendarTitleRef-height');
     this.setState({
       calendarTitleRefHeight: height,
     });
+  };
+
+  stopEvent = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  onCalendarRef = (ref: any) => {
+    this.setState({
+      calendarRef: ref,
+    });
+  };
+
+  // 监听手指开始滑动事件
+  touchStart = (event: React.TouchEvent) => {
+    const { touchStartCallback } = this.props;
+    touchStartCallback && touchStartCallback(event);
+  };
+
+  // 监听手指开始滑动事件
+  touchMove = (event: React.TouchEvent) => {
+    const { touchMoveCallback } = this.props;
+    touchMoveCallback && touchMoveCallback(event);
+  };
+
+  // 监听手指开始滑动事件
+  touchEnd = (event: React.TouchEvent) => {
+    const { touchEndCallback } = this.props;
+    touchEndCallback && touchEndCallback(event);
+  };
+
+  // 滑动方向改变
+  slideChange = (direction: string) => {
+    const { slideChangeCallback } = this.props;
+    slideChangeCallback && slideChangeCallback(direction);
+  };
+
+  dateClick = (date: IDate) => {
+    console.log(date, 'dateClick');
+    const { checkedDate } = this.state;
+    const { dateClickCallback, format, lang } = this.props;
+    let _checkedDate = {
+      ...checkedDate,
+      ...date,
+    };
+
+    let fDate: Date | string = new Date(
+      `${_checkedDate.year}/${_checkedDate.month + 1}/${_checkedDate.day} ${
+        _checkedDate.hours
+      }:${_checkedDate.minutes}`
+    );
+    if (format) {
+      fDate = formatDate(fDate, format, lang);
+    }
+
+    this.setState({
+      checkedDate: _checkedDate,
+    });
+
+    dateClickCallback && dateClickCallback(fDate);
   };
 
   render() {
@@ -127,6 +265,7 @@ class ReactHashCalendar extends React.Component<
     } = this.props;
 
     const {
+      calendarTitleHeight,
       calendarContentHeight,
       isShowDatetimePicker,
       isShowCalendar,
@@ -141,7 +280,7 @@ class ReactHashCalendar extends React.Component<
         })}
         onClick={this.showCalendar}
       >
-        {formatDate(
+        {this.formatDate(
           `${checkedDate.year}/${checkedDate.month + 1}/${checkedDate.day}`,
           language.DEFAULT_DATE_FORMAT
         )}
@@ -155,7 +294,7 @@ class ReactHashCalendar extends React.Component<
         })}
         onClick={this.showTime}
       >
-        {formatDate(
+        {this.formatDate(
           `${checkedDate.year}/${checkedDate.month + 1}/${
             checkedDate.day
           } ${this.fillNumber(checkedDate.hours)}:${this.fillNumber(
@@ -166,8 +305,8 @@ class ReactHashCalendar extends React.Component<
       </span>
     );
 
-    const actionNode: React.ReactNode = (
-      <div>
+    const actionNode: React.ReactNode = actionSlot || (
+      <div className="calendar_title" ref={this.calendarTitleRef}>
         <div className="calendar_title_date">
           {pickerType !== 'time' ? dateNode : ''}
           {pickerType !== 'date' ? timeNode : ''}
@@ -203,13 +342,22 @@ class ReactHashCalendar extends React.Component<
         <div
           className="calendar_content"
           style={{ height: `${calendarContentHeight}px` }}
+          onClick={this.stopEvent}
         >
-          {isShowAction ? (
-            <div className="calendar_title" ref={this.calendarTitleRef}>
-              {actionSlot || actionNode}
-            </div>
-          ) : null}
-          <Calendar {...this.props} show={isShowCalendar} />
+          {isShowAction ? actionNode : null}
+          <Calendar
+            onRef={this.onCalendarRef}
+            {...this.props}
+            calendarTitleHeight={calendarTitleHeight}
+            show={isShowCalendar}
+            slideChangeCallback={this.slideChange}
+            dateChangeCallback={this.dateChange}
+            heightCallback={this.heightChange}
+            touchStartCallback={this.touchStart}
+            touchMoveCallback={this.touchMove}
+            touchEndCallback={this.touchEnd}
+            dateClickCallback={this.dateClick}
+          />
           <TimePicker />
         </div>
       </div>
