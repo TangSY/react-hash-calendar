@@ -15,7 +15,6 @@ const defaultProps = {
   isShowAction: true, // 是否显示日历组件操作栏
   showTodayButton: true, // 是否显示返回今日按钮
   defaultDatetime: new Date(), // 默认时间
-  markDate: [], // 日期下面的标记
   disabledDate: (date: Date) => false, // 禁用的日期
   lang: 'CN', // 使用的语言包
 };
@@ -46,6 +45,7 @@ const state = {
 };
 
 type Props = {
+  markDate: any[];
   model: 'inline' | 'dialog';
   lang: 'CN' | 'EN';
   actionSlot?: React.ReactNode;
@@ -358,7 +358,7 @@ class ReactHashCalendar extends React.Component<
             touchEndCallback={this.touchEnd}
             dateClickCallback={this.dateClick}
           />
-          <TimePicker />
+          {pickerType !== 'date' ? <TimePicker /> : null}
         </div>
       </div>
     ) : null;

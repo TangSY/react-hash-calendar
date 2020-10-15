@@ -100,8 +100,6 @@ const state = {
   isNextWeekInCurrentMonth: false, // 下一周的数据是否在本月
   markDateColorObj: {}, // 所有被标记的日期所对应的颜色
   markDateTypeObj: {}, // 所有被标记的日期所对应的标记类型
-  calendarWidth: 0,
-  calendarHeight: 0,
 };
 
 type Props = {
@@ -133,6 +131,7 @@ type Props = {
 type State = {
   markDateColorObj: IObjectString;
   markDateTypeObj: IObjectString;
+  calendarRef?: HTMLDivElement;
 } & typeof state;
 
 class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
@@ -183,11 +182,10 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
       weekStartIndex,
       calendarGroupHeight,
       calendarWeekTitleHeight,
+      markDateTypeObj,
     } = this.state;
 
-    console.log(prevMarkDate, 'prevMarkDate');
-    console.log(markDate, 'markDate');
-    if (!eq(prevMarkDate, markDate)) {
+    if (!eq(prevMarkDate, markDate) || eq(markDateTypeObj, {})) {
       markDate.forEach((item, index) => {
         if (!item.color) {
           let obj: { color?: string; date?: any[] } = { color: '', date: [] };
@@ -200,7 +198,7 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
         }
         markDate[index].type = item.type || markType || '';
 
-        markDate[index].date = formatDate(markDate[index].date);
+        markDate[index].date = this.dateFormat(markDate[index].date);
       });
 
       let _markDateColorObj: IObjectString = {};
@@ -213,7 +211,6 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
           });
         }
       });
-      console.log(_markDateTypeObj);
       this.setState({
         markDateColorObj: _markDateColorObj,
         markDateTypeObj: _markDateTypeObj,
@@ -250,6 +247,15 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
       heightCallback &&
         heightCallback(calendarGroupHeight + calendarWeekTitleHeight);
     }
+  }
+
+  // 日期格式转换
+  dateFormat(dateArr: string[]) {
+    dateArr.forEach((date, index) => {
+      dateArr[index] = formatDate(date, 'YY/MM/DD');
+    });
+
+    return dateArr;
   }
 
   today = () => {
@@ -397,10 +403,9 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
   calendarRef = (ref: HTMLDivElement): void => {
     if (!ref) return;
 
-    this.setState({
-      calendarWidth: ref.offsetWidth,
-      calendarHeight: ref.offsetHeight,
-    });
+    let height = parseInt(ref.style.height);
+    console.log(height, 'calendarRef');
+    this.setState({ calendarRef: ref });
   };
 
   calendarItemRef = (ref: HTMLDivElement): void => {
@@ -432,21 +437,24 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     const {
       touchStartPositionX,
       touchStartPositionY,
-      calendarWidth,
-      calendarHeight,
+      calendarRef,
     } = this.state;
+    const calendarHeight = (calendarRef && calendarRef.offsetHeight) || 0;
+    const calendarWidth = (calendarRef && calendarRef.offsetWidth) || 0;
     const { disabledWeekView, touchMoveCallback } = this.props;
 
     touchMoveCallback && touchMoveCallback(event);
 
     let moveX = event.touches[0].clientX - touchStartPositionX;
     let moveY = event.touches[0].clientY - touchStartPositionY;
+
     if (Math.abs(moveX) > Math.abs(moveY)) {
       this.setState({ touch: { x: moveX / calendarWidth, y: 0 } });
     } else {
+      console.log(disabledWeekView, 'disabledWeekView');
       // 禁用周视图（禁止上下滑动）
       if (disabledWeekView) return;
-
+      console.log(calendarHeight, 'calendarHeight');
       this.setState({ touch: { x: 0, y: moveY / calendarHeight } });
     }
 
@@ -456,12 +464,8 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
   touchEnd = (event: React.TouchEvent) => {
     // this.$emit('touchend', e);
     console.log('touchEnd');
-    const {
-      touch,
-      isShowWeek,
-      calendarHeight,
-      transitionDuration,
-    } = this.state;
+    const { touch, isShowWeek, transitionDuration, calendarRef } = this.state;
+    const calendarHeight = (calendarRef && calendarRef.offsetHeight) || 0;
     const { slideChangeCallback, touchEndCallback } = this.props;
 
     touchEndCallback && touchEndCallback(event);
@@ -495,6 +499,7 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
 
     this.setState({ isTouching });
 
+    console.log(touch.y, 'touch.y');
     if (
       Math.abs(touch.y) > Math.abs(touch.x) &&
       Math.abs(touch.y * calendarHeight) > 50
