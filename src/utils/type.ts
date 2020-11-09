@@ -30,3 +30,8 @@ export interface IDate {
   month: number;
   day: number;
 }
+
+export interface ITime {
+  hours: number;
+  minutes: number;
+}

@@ -1,6 +1,11 @@
 import React from 'react';
 import languageUtil from '../../language';
-import { tuple, IDate } from '../../utils/type';
+import { IDate } from '../../utils/type';
+import {
+  SCROLL_DIRECTION_LIST,
+  WEEK_LIST,
+  DIRECTION_LIST,
+} from '../../utils/constant';
 import { eq } from '../../utils/eq';
 import { formatDate } from '../../utils/util';
 import classNames from 'classnames';
@@ -12,29 +17,6 @@ const dayNow = new Date().getDate();
 interface IObjectString {
   [index: string]: string;
 }
-
-const SCROLL_DIRECTION_LIST = tuple('left', 'right', 'up', 'down');
-
-const WEEK_LIST = tuple(
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday'
-);
-
-const DIRECTION_LIST = tuple(
-  '',
-  'all',
-  'left',
-  'right',
-  'up',
-  'down',
-  'horizontal',
-  'vertical'
-);
 
 const defaultProps = {
   show: false,
@@ -88,7 +70,6 @@ const state = {
   isTouching: false, // 是否正在滑动
   calendarGroupHeight: 0,
   calendarWeekTitleHeight: 0,
-  calendarItemHeight: 0,
   touchStartPositionX: 0, // 开始滑动x轴的值
   touchStartPositionY: 0, // 开始滑动时y轴的值
   isShowWeek: false, // 当前日历是否以星期方式展示
@@ -132,6 +113,7 @@ type State = {
   markDateColorObj: IObjectString;
   markDateTypeObj: IObjectString;
   calendarRef?: HTMLDivElement;
+  calendarItemRef?: HTMLDivElement;
 } & typeof state;
 
 class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
@@ -145,6 +127,10 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     const language = languageUtil[lang];
     const calendarWeek = language.WEEK;
     const weekStartIndex = weekArray.indexOf(weekStart);
+    console.log(
+      'Calendar -> componentDidMount -> weekStartIndex',
+      weekStartIndex
+    );
     const start = calendarWeek.slice(weekStartIndex);
     const end = calendarWeek.slice(0, weekStartIndex);
 
@@ -174,16 +160,22 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
 
     const {
       weekStartIndex: prevWeekStartIndex,
-      calendarGroupHeight: prevCalendarGroupHeight,
+      calendarItemRef: prevCalendarItemRef,
       checkedDate: prevCheckedDate,
     } = prevState;
     const {
       checkedDate,
       weekStartIndex,
-      calendarGroupHeight,
+      calendarItemRef,
       calendarWeekTitleHeight,
       markDateTypeObj,
     } = this.state;
+
+    const prevCalendarGroupHeight =
+      (prevCalendarItemRef && prevCalendarItemRef.offsetHeight * 6) || 0;
+
+    const calendarGroupHeight =
+      (calendarItemRef && calendarItemRef.offsetHeight * 6) || 0;
 
     if (!eq(prevMarkDate, markDate) || eq(markDateTypeObj, {})) {
       markDate.forEach((item, index) => {
@@ -224,8 +216,7 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     if (prevWeekStartIndex !== weekStartIndex) {
       this.calculateCalendarOfThreeMonth(checkedDate.year, checkedDate.month);
     }
-    console.log(prevShow, 'prevShow');
-    console.log(show, 'show');
+
     if (prevShow !== show) {
       this.calculateCalendarOfThreeMonth(checkedDate.year, checkedDate.month);
       this.showMonth();
@@ -244,6 +235,11 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     }
 
     if (prevCalendarGroupHeight !== calendarGroupHeight) {
+      console.log('Calendar -> calendarGroupHeight', calendarGroupHeight);
+      console.log(
+        'Calendar -> prevCalendarGroupHeight',
+        prevCalendarGroupHeight
+      );
       heightCallback &&
         heightCallback(calendarGroupHeight + calendarWeekTitleHeight);
     }
@@ -283,10 +279,13 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     const {
       calendarOfMonth,
       checkedDate: _checkedDate,
-      calendarItemHeight,
+      calendarItemRef,
       selectedDayIndex,
     } = this.state;
-    checkedDate = _checkedDate;
+    checkedDate = checkedDate || _checkedDate;
+
+    const calendarItemHeight =
+      (calendarItemRef && calendarItemRef.offsetHeight) || 0;
 
     let daysArr: number[] = [];
     calendarOfMonth[1].forEach((item: IDate) => {
@@ -302,6 +301,7 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     let indexOfLine = Math.ceil((dayIndexOfMonth + 1) / 7);
     let lastLine = indexOfLine - 1;
 
+    console.log('showWeek -> calendarItemHeight', calendarItemHeight);
     this.setState({
       calendarY: -(calendarItemHeight * lastLine),
       isShowWeek: true,
@@ -310,8 +310,10 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
 
     let currentWeek = [];
     let sliceStart = lastLine * 7;
+    console.log('showWeek -> lastLine', lastLine);
     let sliceEnd = sliceStart + 7;
     currentWeek = calendarOfMonth[1].slice(sliceStart, sliceEnd);
+    console.log('showWeek -> currentWeek', currentWeek);
 
     let _selectedDayIndex = 0;
     let _isLastWeekInCurrentMonth = false;
@@ -381,7 +383,10 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
   };
 
   showMonth = () => {
-    const { checkedDate, calendarItemHeight } = this.state;
+    const { checkedDate, calendarItemRef } = this.state;
+
+    const calendarItemHeight =
+      (calendarItemRef && calendarItemRef.offsetHeight) || 0;
 
     this.setState({
       calendarY: 0,
@@ -390,7 +395,7 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
       isNextWeekInCurrentMonth: false,
       calendarGroupHeight: calendarItemHeight * 6,
     });
-    console.log('showMonth');
+
     this.calculateCalendarOfThreeMonth(checkedDate.year, checkedDate.month);
   };
 
@@ -403,17 +408,16 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
   calendarRef = (ref: HTMLDivElement): void => {
     if (!ref) return;
 
-    let height = parseInt(ref.style.height);
-    console.log(height, 'calendarRef');
     this.setState({ calendarRef: ref });
   };
 
   calendarItemRef = (ref: HTMLDivElement): void => {
     if (!ref) return;
 
+    this.setState({ calendarItemRef: ref });
+
     const height = ref.offsetHeight;
     this.setState({
-      calendarItemHeight: height,
       calendarGroupHeight: height * 6,
     });
   };
@@ -422,7 +426,6 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     const { touchStartCallback } = this.props;
     touchStartCallback && touchStartCallback(event);
 
-    console.log('touchStart');
     this.setState({
       touchStartPositionX: event.touches[0].clientX,
       touchStartPositionY: event.touches[0].clientY,
@@ -433,7 +436,7 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
 
   touchMove = (event: React.TouchEvent) => {
     event.stopPropagation();
-    console.log('touchMove');
+
     const {
       touchStartPositionX,
       touchStartPositionY,
@@ -451,10 +454,9 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     if (Math.abs(moveX) > Math.abs(moveY)) {
       this.setState({ touch: { x: moveX / calendarWidth, y: 0 } });
     } else {
-      console.log(disabledWeekView, 'disabledWeekView');
       // 禁用周视图（禁止上下滑动）
       if (disabledWeekView) return;
-      console.log(calendarHeight, 'calendarHeight');
+
       this.setState({ touch: { x: 0, y: moveY / calendarHeight } });
     }
 
@@ -462,15 +464,13 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
   };
 
   touchEnd = (event: React.TouchEvent) => {
-    // this.$emit('touchend', e);
-    console.log('touchEnd');
     const { touch, isShowWeek, transitionDuration, calendarRef } = this.state;
     const calendarHeight = (calendarRef && calendarRef.offsetHeight) || 0;
     const { slideChangeCallback, touchEndCallback } = this.props;
 
     touchEndCallback && touchEndCallback(event);
 
-    let isTouching = false;
+    this.setState({ isTouching: false });
     if (Math.abs(touch.x) > Math.abs(touch.y) && Math.abs(touch.x) > 0.2) {
       this.setState({ currentChangeIsScroll: true });
       if (touch.x > 0) {
@@ -478,9 +478,10 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
         this.getLastMonth();
         if (isShowWeek) {
           setTimeout(() => {
-            isTouching = true;
-            this.setState({ currentChangeIsScroll: true });
-            this.getLastWeek();
+            this.setState({ isTouching: true });
+            this.setState({ currentChangeIsScroll: true }, () => {
+              this.getLastWeek();
+            });
           }, transitionDuration * 1000);
         }
       } else if (touch.x < 0) {
@@ -489,17 +490,17 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
         this.getNextMonth();
         if (isShowWeek) {
           setTimeout(() => {
-            isTouching = true;
-            this.setState({ currentChangeIsScroll: true });
-            this.getNextWeek();
+            this.setState({ isTouching: true });
+            this.setState({ currentChangeIsScroll: true }, () => {
+              this.getNextWeek();
+            });
           }, transitionDuration * 1000);
         }
       }
     }
 
-    this.setState({ isTouching });
+    // this.setState({ isTouching });
 
-    console.log(touch.y, 'touch.y');
     if (
       Math.abs(touch.y) > Math.abs(touch.x) &&
       Math.abs(touch.y * calendarHeight) > 50
@@ -671,9 +672,6 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
 
   markDateColor = (date: IDate, type: string): string => {
     const { markDateTypeObj, markDateColorObj } = this.state;
-    // console.log(date, 'date');
-    // console.log(type, 'type');
-    // console.log(markDateTypeObj, 'markDateTypeObj');
 
     let dateString = `${date.year}/${this.fillNumber(
       date.month + 1
@@ -709,7 +707,6 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
   };
 
   clickCalendarDay = (e: React.MouseEvent, date: IDate) => {
-    console.log('clickCalendarDay');
     if (!date) return;
 
     if (this.formatDisabledDate(date)) return;
@@ -729,11 +726,9 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
         } = this.state;
 
         if (date.month === lastMonth && date.year === lastMonthYear) {
-          console.log(date.month, 'getLastMonth');
           this.getLastMonth();
         }
         if (date.month === nextMonth && date.year === nextMonthYear) {
-          console.log(date.month, 'getNextMonth');
           this.getNextMonth();
         }
 
@@ -774,15 +769,10 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     let calendarOfMonth = [];
     calendarOfMonth.push(firstMonth, secondMonth, thirdMonth);
 
-    this.setState(
-      {
-        calendarOfMonth,
-        calendarOfMonthShow: JSON.parse(JSON.stringify(calendarOfMonth)),
-      },
-      () => {
-        console.log(this.state.calendarOfMonthShow, 'calendarOfMonthShow');
-      }
-    );
+    this.setState({
+      calendarOfMonth,
+      calendarOfMonthShow: JSON.parse(JSON.stringify(calendarOfMonth)),
+    });
 
     if (!scrollChangeDate && currentChangeIsScroll) {
       this.setState({
@@ -904,14 +894,21 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     } = this.props;
     const {
       calendarWeek,
-      calendarGroupHeight,
+      calendarItemRef,
       calendarOfMonthShow,
       translateIndex,
       isTouching,
+      isShowWeek,
       touch,
       calendarY,
       transitionDuration,
     } = this.state;
+
+    const calendarItemHeight =
+      (calendarItemRef && calendarItemRef.offsetHeight) || 0;
+    const calendarGroupHeight = isShowWeek
+      ? calendarItemHeight
+      : calendarItemHeight * 6;
 
     const weekNode: React.ReactNode = (
       <div className="calendar_week" ref={this.weekTitleRef}>

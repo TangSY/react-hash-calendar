@@ -3,7 +3,8 @@ import Calendar from '../calendar';
 import TimePicker from '../timePicker';
 import classNames from 'classnames';
 import { formatDate } from '../../utils/util';
-import { IDate } from '../../utils/type';
+import { IDate, ITime } from '../../utils/type';
+import { WEEK_LIST, DIRECTION_LIST } from '../../utils/constant';
 import languageUtil from '../../language';
 import './style.styl';
 
@@ -17,6 +18,23 @@ const defaultProps = {
   defaultDatetime: new Date(), // 默认时间
   disabledDate: (date: Date) => false, // 禁用的日期
   lang: 'CN', // 使用的语言包
+
+  // calendar props
+  disabledWeekView: false, // 禁用周视图
+  isShowWeekView: false, // 是否展示周视图
+  scrollChangeDate: true, // 滑动的时候，是否触发改变日期
+  firstDayOfMonthClassName: '', // 每月第一天的 className
+  todayClassName: '', // 当天日期的 className
+  checkedDayClassName: '', // 日期被选中时的 className
+  disabledClassName: '', // 日期被禁用时的 className
+  notCurrentMonthDayClassName: '', // 不是当前展示月份日期的 className(例如日历前面几天与后面几天灰色部分)
+  defaultDate: new Date(),
+  weekStart: 'Sunday',
+  markType: 'dot', // 日期标记类型
+  disabledScroll: '', // 禁止滑动，可选值【'left', 'right', 'up', 'down', 'horizontal', 'vertical', 'all', ''】
+
+  // timePicker props
+  minuteStep: 1,
 };
 
 const state = {
@@ -45,12 +63,15 @@ const state = {
 };
 
 type Props = {
+  weekStart: typeof WEEK_LIST[number];
+  disabledScroll: typeof DIRECTION_LIST[number];
   markDate: any[];
   model: 'inline' | 'dialog';
   lang: 'CN' | 'EN';
   actionSlot?: React.ReactNode;
   todaySlot?: React.ReactNode;
   confirmSlot?: React.ReactNode;
+  onVisibleChange?: (visible: boolean) => void;
   slideChangeCallback?: (direction: string) => void;
   touchStartCallback?: (e: React.TouchEvent) => void;
   touchMoveCallback?: (e: React.TouchEvent) => void;
@@ -69,11 +90,10 @@ class ReactHashCalendar extends React.Component<
   public state: State = state;
 
   componentDidMount() {
-    const { model, lang } = this.props;
+    const { model, lang, onVisibleChange } = this.props;
     if (model === 'inline') {
-      this.setState({
-        isShowDatetimePicker: true,
-      });
+      this.setState({ isShowDatetimePicker: true });
+      onVisibleChange && onVisibleChange(true);
     }
 
     this.setState({ language: languageUtil[lang] });
@@ -85,19 +105,28 @@ class ReactHashCalendar extends React.Component<
 
   componentDidUpdate(prevProps: Props) {
     const { pickerType } = prevProps;
-    const { isShowAction } = this.props;
-    const { isShowCalendar } = this.state;
+    const { isShowAction, visible } = this.props;
     const {
+      isShowCalendar,
+      isShowDatetimePicker,
       calendarTitleRefHeight,
       calendarBodyHeight,
       calendarTitleHeight,
+      calendarContentHeight,
     } = this.state;
 
     if (isShowCalendar && pickerType === 'time') {
       this.showTime();
     }
 
-    if (calendarTitleHeight !== calendarTitleRefHeight) {
+    if (visible && !isShowDatetimePicker) {
+      this.show();
+    }
+
+    if (
+      calendarTitleHeight !== calendarTitleRefHeight ||
+      calendarContentHeight !== calendarTitleRefHeight + calendarBodyHeight
+    ) {
       if (!isShowAction) {
         this.setState({ calendarTitleHeight: 0 });
       } else {
@@ -119,11 +148,15 @@ class ReactHashCalendar extends React.Component<
   };
 
   show = () => {
+    const { onVisibleChange } = this.props;
     this.setState({ isShowDatetimePicker: true });
+    onVisibleChange && onVisibleChange(true);
   };
 
   close = () => {
+    const { onVisibleChange } = this.props;
     this.setState({ isShowDatetimePicker: false });
+    onVisibleChange && onVisibleChange(false);
   };
 
   formatDate(time: string, format: string) {
@@ -167,11 +200,21 @@ class ReactHashCalendar extends React.Component<
     });
   };
 
+  timeChange = (time: ITime) => {
+    const { checkedDate } = this.state;
+    this.setState({
+      checkedDate: {
+        ...checkedDate,
+        ...time,
+      },
+    });
+  };
+
   heightChange = (height: number) => {
+    console.log('heightChange -> height', height);
     const { firstTimes, calendarTitleHeight } = this.state;
     const { model } = this.props;
-    console.log(height, 'heightChange-height');
-    console.log(calendarTitleHeight, 'heightChange-calendarTitleHeight');
+
     if (!firstTimes && model === 'dialog') return;
 
     this.setState({
@@ -187,7 +230,7 @@ class ReactHashCalendar extends React.Component<
   calendarTitleRef = (ref: HTMLDivElement): void => {
     if (!ref) return;
     const height = ref.offsetHeight;
-    console.log(height, 'calendarTitleRef-height');
+
     this.setState({
       calendarTitleRefHeight: height,
     });
@@ -228,7 +271,6 @@ class ReactHashCalendar extends React.Component<
   };
 
   dateClick = (date: IDate) => {
-    console.log(date, 'dateClick');
     const { checkedDate } = this.state;
     const { dateClickCallback, format, lang } = this.props;
     let _checkedDate = {
@@ -262,6 +304,7 @@ class ReactHashCalendar extends React.Component<
       todaySlot,
       actionSlot,
       confirmSlot,
+      defaultDatetime,
     } = this.props;
 
     const {
@@ -358,7 +401,14 @@ class ReactHashCalendar extends React.Component<
             touchEndCallback={this.touchEnd}
             dateClickCallback={this.dateClick}
           />
-          {pickerType !== 'date' ? <TimePicker /> : null}
+          {pickerType !== 'date' ? (
+            <TimePicker
+              show={!isShowCalendar}
+              {...this.props}
+              defaultTime={defaultDatetime}
+              timeChangeCallback={this.timeChange}
+            />
+          ) : null}
         </div>
       </div>
     ) : null;
