@@ -77,6 +77,7 @@ type Props = {
   touchMoveCallback?: (e: React.TouchEvent) => void;
   touchEndCallback?: (e: React.TouchEvent) => void;
   dateClickCallback?: (date: Date | string) => void;
+  dateConfirmCallback?: (date: Date | string) => void;
 } & Partial<typeof defaultProps>;
 type State = { calendarRef?: any } & typeof state;
 
@@ -173,7 +174,7 @@ class ReactHashCalendar extends React.Component<
   };
 
   confirm = () => {
-    const { format, model, lang } = this.props;
+    const { format, model, lang, dateConfirmCallback } = this.props;
     const { checkedDate } = this.state;
     let date: Date | string = new Date(
       `${checkedDate.year}/${checkedDate.month + 1}/${checkedDate.day} ${
@@ -183,8 +184,8 @@ class ReactHashCalendar extends React.Component<
     if (format) {
       date = formatDate(date, format, lang);
     }
-    console.log(date);
-    // this.$emit('confirm', date);
+    dateConfirmCallback && dateConfirmCallback(date);
+
     if (model === 'dialog') {
       this.close();
     }

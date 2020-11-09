@@ -92,6 +92,14 @@ class Examples extends React.Component<{}, State, {}> {
     this.setState({ isShowCalendar: true });
   };
 
+  dateClick = (date?: string | Date) => {
+    console.log('Examples -> dateClick -> date', date);
+  };
+
+  dateConfirm = (date?: string | Date) => {
+    console.log('Examples -> dateConfirm -> date', date);
+  };
+
   render() {
     const { isShowCalendar, markDate } = this.state;
     return (
@@ -100,7 +108,10 @@ class Examples extends React.Component<{}, State, {}> {
         <ReactHashCalendar
           visible={isShowCalendar}
           onVisibleChange={this.handleVisibleChange}
+          dateClickCallback={this.dateClick}
+          dateConfirmCallback={this.dateConfirm}
           model="dialog"
+          format="YY/MM/DD hh:mm"
           markDate={markDate}
           weekStart="Monday"
           minuteStep={1}
