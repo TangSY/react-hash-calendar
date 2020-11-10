@@ -84,7 +84,7 @@ const state = {
 };
 
 type Props = {
-  markDate: any[];
+  markDate?: any[];
   disabledScroll: typeof DIRECTION_LIST[number];
   lang: 'CN' | 'EN';
   weekStart: typeof WEEK_LIST[number];
@@ -121,20 +121,39 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
   public state: State = state;
 
   componentDidMount() {
-    const { lang, weekStart, onRef } = this.props;
-    const { weekArray } = this.state;
+    const { lang, weekStart, onRef, defaultDate } = this.props;
+    const { weekArray, checkedDate, isShowWeek } = this.state;
 
     const language = languageUtil[lang];
     const calendarWeek = language.WEEK;
     const weekStartIndex = weekArray.indexOf(weekStart);
-    console.log(
-      'Calendar -> componentDidMount -> weekStartIndex',
-      weekStartIndex
-    );
     const start = calendarWeek.slice(weekStartIndex);
     const end = calendarWeek.slice(0, weekStartIndex);
 
     onRef && onRef(this);
+
+    if (defaultDate) {
+      this.setState(
+        {
+          checkedDate: {
+            ...checkedDate,
+            year: defaultDate.getFullYear(),
+            month: defaultDate.getMonth(),
+            day: defaultDate.getDate(),
+          },
+        },
+        () => {
+          this.calculateCalendarOfThreeMonth(
+            defaultDate.getFullYear(),
+            defaultDate.getMonth()
+          );
+
+          if (isShowWeek) {
+            this.showWeek();
+          }
+        }
+      );
+    }
 
     this.setState({
       language: language,
@@ -177,7 +196,11 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     const calendarGroupHeight =
       (calendarItemRef && calendarItemRef.offsetHeight * 6) || 0;
 
-    if (!eq(prevMarkDate, markDate) || eq(markDateTypeObj, {})) {
+    if (
+      markDate &&
+      (!eq(prevMarkDate, markDate) || eq(markDateTypeObj, {})) &&
+      !eq(markDate, [])
+    ) {
       markDate.forEach((item, index) => {
         if (!item.color) {
           let obj: { color?: string; date?: any[] } = { color: '', date: [] };
@@ -235,11 +258,6 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     }
 
     if (prevCalendarGroupHeight !== calendarGroupHeight) {
-      console.log('Calendar -> calendarGroupHeight', calendarGroupHeight);
-      console.log(
-        'Calendar -> prevCalendarGroupHeight',
-        prevCalendarGroupHeight
-      );
       heightCallback &&
         heightCallback(calendarGroupHeight + calendarWeekTitleHeight);
     }
@@ -472,34 +490,33 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
 
     this.setState({ isTouching: false });
     if (Math.abs(touch.x) > Math.abs(touch.y) && Math.abs(touch.x) > 0.2) {
-      this.setState({ currentChangeIsScroll: true });
-      if (touch.x > 0) {
-        slideChangeCallback && slideChangeCallback('right');
-        this.getLastMonth();
-        if (isShowWeek) {
-          setTimeout(() => {
-            this.setState({ isTouching: true });
-            this.setState({ currentChangeIsScroll: true }, () => {
-              this.getLastWeek();
-            });
-          }, transitionDuration * 1000);
-        }
-      } else if (touch.x < 0) {
-        slideChangeCallback && slideChangeCallback('left');
+      this.setState({ currentChangeIsScroll: true }, () => {
+        if (touch.x > 0) {
+          slideChangeCallback && slideChangeCallback('right');
+          this.getLastMonth();
+          if (isShowWeek) {
+            setTimeout(() => {
+              this.setState({ isTouching: true });
+              this.setState({ currentChangeIsScroll: true }, () => {
+                this.getLastWeek();
+              });
+            }, transitionDuration * 1000);
+          }
+        } else if (touch.x < 0) {
+          slideChangeCallback && slideChangeCallback('left');
 
-        this.getNextMonth();
-        if (isShowWeek) {
-          setTimeout(() => {
-            this.setState({ isTouching: true });
-            this.setState({ currentChangeIsScroll: true }, () => {
-              this.getNextWeek();
-            });
-          }, transitionDuration * 1000);
+          this.getNextMonth();
+          if (isShowWeek) {
+            setTimeout(() => {
+              this.setState({ isTouching: true });
+              this.setState({ currentChangeIsScroll: true }, () => {
+                this.getNextWeek();
+              });
+            }, transitionDuration * 1000);
+          }
         }
-      }
+      });
     }
-
-    // this.setState({ isTouching });
 
     if (
       Math.abs(touch.y) > Math.abs(touch.x) &&

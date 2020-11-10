@@ -28,7 +28,6 @@ const defaultProps = {
   checkedDayClassName: '', // 日期被选中时的 className
   disabledClassName: '', // 日期被禁用时的 className
   notCurrentMonthDayClassName: '', // 不是当前展示月份日期的 className(例如日历前面几天与后面几天灰色部分)
-  defaultDate: new Date(),
   weekStart: 'Sunday',
   markType: 'dot', // 日期标记类型
   disabledScroll: '', // 禁止滑动，可选值【'left', 'right', 'up', 'down', 'horizontal', 'vertical', 'all', ''】
@@ -65,7 +64,7 @@ const state = {
 type Props = {
   weekStart: typeof WEEK_LIST[number];
   disabledScroll: typeof DIRECTION_LIST[number];
-  markDate: any[];
+  markDate?: any[];
   model: 'inline' | 'dialog';
   lang: 'CN' | 'EN';
   actionSlot?: React.ReactNode;
@@ -392,6 +391,7 @@ class ReactHashCalendar extends React.Component<
           <Calendar
             onRef={this.onCalendarRef}
             {...this.props}
+            defaultDate={defaultDatetime}
             calendarTitleHeight={calendarTitleHeight}
             show={isShowCalendar}
             slideChangeCallback={this.slideChange}

@@ -46,6 +46,9 @@ class TimePicker extends React.Component<
   public state: State = state;
 
   componentDidMount() {
+    const { defaultTime, timeChangeCallback } = this.props;
+    const { checkedDate } = this.state;
+
     this.setState({
       hashID: [
         `time${Math.floor(Math.random() * 1000000)}`,
@@ -53,26 +56,27 @@ class TimePicker extends React.Component<
       ],
       hashClass: `time_item_${Math.floor(Math.random() * 1000000)}`,
     });
-  }
 
-  componentDidUpdate(prevProps: Props & typeof defaultProps, prevState: State) {
-    const { defaultTime: defaultTimePrev, show: showPrev } = prevProps;
-    const { defaultTime, timeChangeCallback, show } = this.props;
-
-    if (show !== showPrev && show) {
-      setTimeout(() => {
-        this.initTimeArray();
-      });
-    }
-
-    if (defaultTime !== defaultTimePrev) {
+    if (defaultTime) {
       let _checkedDate: ITime = {
+        ...checkedDate,
         hours: defaultTime.getHours(),
         minutes: defaultTime.getMinutes(),
       };
       this.setState({ checkedDate: _checkedDate });
 
       timeChangeCallback && timeChangeCallback(_checkedDate);
+    }
+  }
+
+  componentDidUpdate(prevProps: Props & typeof defaultProps, prevState: State) {
+    const { show: showPrev } = prevProps;
+    const { show } = this.props;
+
+    if (show !== showPrev && show) {
+      setTimeout(() => {
+        this.initTimeArray();
+      });
     }
   }
 

@@ -2,6 +2,7 @@ import ReactHashCalendar from '../components/datetimePicker';
 import React from 'react';
 
 const state = {
+  defaultDatetime: new Date(),
   isShowCalendar: false,
   markDate: [
     '2020/11/24',
@@ -100,12 +101,30 @@ class Examples extends React.Component<{}, State, {}> {
     console.log('Examples -> dateConfirm -> date', date);
   };
 
+  disabledDate = (date: Date): boolean => {
+    let timestamp = date.getTime();
+    let oneDay = 24 * 60 * 60 * 1000;
+
+    if (timestamp < new Date().getTime() - oneDay) {
+      return true;
+    }
+    return false;
+  };
+
   render() {
-    const { isShowCalendar, markDate } = this.state;
+    const { isShowCalendar, markDate, defaultDatetime } = this.state;
     return (
       <div>
         <button onClick={this.showCalendar}>显示</button>
         <ReactHashCalendar
+          isShowWeekView={true}
+          pickerType="datetime"
+          disabledScroll=""
+          showTodayButton={true}
+          disabledWeekView={true}
+          disabledDate={this.disabledDate}
+          isShowAction={true}
+          lang="CN"
           visible={isShowCalendar}
           onVisibleChange={this.handleVisibleChange}
           dateClickCallback={this.dateClick}
@@ -113,7 +132,10 @@ class Examples extends React.Component<{}, State, {}> {
           model="dialog"
           format="YY/MM/DD hh:mm"
           markDate={markDate}
-          weekStart="Monday"
+          scrollChangeDate={true}
+          markType="dotcircle"
+          weekStart="Sunday"
+          defaultDatetime={defaultDatetime}
           minuteStep={1}
         />
       </div>
