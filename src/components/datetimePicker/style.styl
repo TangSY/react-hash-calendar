@@ -8,55 +8,55 @@
   left: 0;
   background: rgba(0, 0, 0, 0.6);
   z-index: 999;
-}
-.calendar_inline {
-  position: relative;
-  width: 100%;
-  height: auto;
-  background: none;
-  height: px2vw(710px);
-  z-index: 1;
-}
-.calendar_content {
-  position: absolute;
-  width: 100%;
-  left: 0;
-  bottom: 0;
-  display: flex;
-  padding-bottom: px2vw(26px);
-  flex-wrap: wrap;
-  background: white;
-  height: px2vw(710px);
-  overflow: hidden;
-}
-.calendar_title {
-  position: absolute;
-  width: 100%;
-  left: 0;
-  top: 0;
-  background: bg-color;
-  borderBottom();
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 1;
-}
-.calendar_title_date {
-  color: vice-font-color;
-  background: white;
-  padding: px2vw(30px) px2vw(15px);
-}
-.calendar_title_date_active {
-  color: main-font-color;
-  font-weight: bold;
-}
-.calendar_title_date_time {
-  margin-left: px2vw(20px);
-}
-.calendar_confirm {
-  color: main-color;
-  margin-right: px2vw(34px);
-}
-.today_disable {
-  color: disabled-font-color;
+  &.calendar_inline {
+    position: relative;
+    width: 100%;
+    height: auto;
+    background: none;
+    height: px2vw(710px);
+    z-index: 1;
+  }
+  .calendar_content {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    padding-bottom: px2vw(26px);
+    flex-wrap: wrap;
+    background: white;
+    height: px2vw(710px);
+    overflow: hidden;
+  }
+  .calendar_title {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+    background: bg-color;
+    borderBottom();
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1;
+  }
+  .calendar_title_date {
+    color: vice-font-color;
+    background: white;
+    padding: px2vw(30px) px2vw(15px);
+  }
+  .calendar_title_date_active {
+    color: main-font-color;
+    font-weight: bold;
+  }
+  .calendar_title_date_time {
+    margin-left: px2vw(20px);
+  }
+  .calendar_confirm {
+    color: main-color;
+    margin-right: px2vw(34px);
+  }
+  .today_disable {
+    color: disabled-font-color;
+  }
 }

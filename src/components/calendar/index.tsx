@@ -121,7 +121,14 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
   public state: State = state;
 
   componentDidMount() {
-    const { lang, weekStart, onRef, defaultDate } = this.props;
+    const {
+      lang,
+      weekStart,
+      onRef,
+      defaultDate,
+      isShowWeekView,
+      disabledWeekView,
+    } = this.props;
     const { weekArray, checkedDate, isShowWeek } = this.state;
 
     const language = languageUtil[lang];
@@ -131,6 +138,18 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     const end = calendarWeek.slice(0, weekStartIndex);
 
     onRef && onRef(this);
+
+    if (isShowWeekView && disabledWeekView) {
+      throw new Error(
+        "'isShowWeekView' and 'disabledWeekView' can't be used at the same time"
+      );
+    }
+
+    if (isShowWeekView) {
+      setTimeout(() => {
+        this.showWeek();
+      });
+    }
 
     if (defaultDate) {
       this.setState(
@@ -179,7 +198,7 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
 
     const {
       weekStartIndex: prevWeekStartIndex,
-      calendarItemRef: prevCalendarItemRef,
+      calendarGroupHeight: prevCalendarGroupHeight,
       checkedDate: prevCheckedDate,
     } = prevState;
     const {
@@ -188,13 +207,14 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
       calendarItemRef,
       calendarWeekTitleHeight,
       markDateTypeObj,
+      isShowWeek,
     } = this.state;
 
-    const prevCalendarGroupHeight =
-      (prevCalendarItemRef && prevCalendarItemRef.offsetHeight * 6) || 0;
-
-    const calendarGroupHeight =
-      (calendarItemRef && calendarItemRef.offsetHeight * 6) || 0;
+    const calendarItemHeight =
+      (calendarItemRef && calendarItemRef.offsetHeight) || 0;
+    const calendarGroupHeight = isShowWeek
+      ? calendarItemHeight
+      : calendarItemHeight * 6;
 
     if (
       markDate &&
@@ -257,9 +277,18 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
       }
     }
 
+    console.log(
+      'Calendar -> componentDidUpdate -> prevCalendarGroupHeight',
+      prevCalendarGroupHeight
+    );
+    console.log(
+      'Calendar -> componentDidUpdate -> calendarGroupHeight',
+      calendarGroupHeight
+    );
     if (prevCalendarGroupHeight !== calendarGroupHeight) {
       heightCallback &&
         heightCallback(calendarGroupHeight + calendarWeekTitleHeight);
+      this.setState({ calendarGroupHeight });
     }
   }
 
@@ -470,15 +499,26 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     let moveY = event.touches[0].clientY - touchStartPositionY;
 
     if (Math.abs(moveX) > Math.abs(moveY)) {
+      if (
+        (moveX < 0 && !this.isCanScroll('left')) ||
+        (moveX > 0 && !this.isCanScroll('right'))
+      ) {
+        return;
+      }
+
       this.setState({ touch: { x: moveX / calendarWidth, y: 0 } });
     } else {
       // 禁用周视图（禁止上下滑动）
-      if (disabledWeekView) return;
+      if (
+        disabledWeekView ||
+        (moveY < 0 && !this.isCanScroll('up')) ||
+        (moveY > 0 && !this.isCanScroll('down'))
+      ) {
+        return;
+      }
 
       this.setState({ touch: { x: 0, y: moveY / calendarHeight } });
     }
-
-    this.setDisabledScrollDirection();
   };
 
   touchEnd = (event: React.TouchEvent) => {
@@ -630,32 +670,14 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     this.calculateCalendarOfThreeMonth(_yearOfCurrentShow, _monthOfCurrentShow);
   };
 
-  // 设置禁止滑动的方向
-  setDisabledScrollDirection = () => {
-    const { touch } = this.state;
-
-    touch.x < 0 &&
-      !this.isCanScroll('left') &&
-      this.setState({ touch: { ...touch, x: 0 } });
-    touch.x > 0 &&
-      !this.isCanScroll('right') &&
-      this.setState({ touch: { ...touch, x: 0 } });
-    touch.y < 0 &&
-      !this.isCanScroll('up') &&
-      this.setState({ touch: { ...touch, y: 0 } });
-    touch.y > 0 &&
-      !this.isCanScroll('down') &&
-      this.setState({ touch: { ...touch, y: 0 } });
-  };
-
   // 是否可以滑动
   isCanScroll = (dire: typeof SCROLL_DIRECTION_LIST[number]): boolean => {
     const { disabledScroll } = this.props;
     const scrollObj = {
-      up: [true, 'up', 'vertical'],
-      down: [true, 'down', 'vertical'],
-      left: [true, 'left', 'horizontal'],
-      right: [true, 'right', 'horizontal'],
+      up: ['all', 'up', 'vertical'],
+      down: ['all', 'down', 'vertical'],
+      left: ['all', 'left', 'horizontal'],
+      right: ['all', 'right', 'horizontal'],
     };
 
     let checkedScrollArr = scrollObj[dire];

@@ -1,87 +1,89 @@
 @import '../../style/common.styl';
 
-.calendar_body {
-  position: relative;
-  width: 100%;
-  margin-top: px2vw(100px);
-}
-.calendar_week {
-  position: absolute;
-  width: 100%;
-  left: 0;
-  top: 0;
-  flexAlign();
-  background: white;
-  color: vice-font-color;
-  z-index: 2;
-}
-.calendar_group {
-  position: absolute;
-  top: px2vw(70px);
-  left: 0;
-  bottom: 0;
-  right: 0;
-  overflow: hidden;
-  transition: height 0.3s;
-  -webkit-transition: height 0.3s;
-}
-.calendar_group ul {
-  height: 100%;
-}
-.calendar_group_li {
-  position: absolute;
-  top: 0;
-  left: px2vw(4px);
-  bottom: 0;
-  right: 0;
-  height: 100%;
-  width: 100%;
-  flexAlign();
-  flex-wrap: wrap;
-  background: white;
-  will-change: transform;
-}
-.calendar_item {
-  width: 14.13333335%;
-  flexContent();
-  flex-direction: column;
-}
-.calendar_item_disable {
-  background-color: disabled-bg-color;
-  opacity: 1;
-  cursor: not-allowed;
-  color: disabled-font-color;
-}
-.calendar_day {
-  width: px2vw(60px);
-  height: px2vw(60px);
-  border-radius: 50%;
-  fontSize(28px);
-  flexContent();
-  margin-bottom: px2vw(8px);
-}
-.calendar_first_today {
-  color: main-color;
-}
-.calendar_first_today span {
-  fontSize(20px);
-  margin-top: px2vw(3px);
-}
-.calendar_day_today {
-  background: bg-color;
-}
-.calendar_mark_circle {
-  border: 1px solid main-color;
-}
-.calendar_day_not {
-  color: disabled-font-color;
-}
-.calendar_day_checked {
-  background: main-color;
-  color: white;
-}
-.calendar_dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+.hash-calendar {
+  .calendar_body {
+    position: relative;
+    width: 100%;
+    margin-top: px2vw(100px);
+  }
+  .calendar_week {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+    flexAlign();
+    background: white;
+    color: vice-font-color;
+    z-index: 2;
+  }
+  .calendar_group {
+    position: absolute;
+    top: px2vw(70px);
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: hidden;
+    transition: height 0.3s;
+    -webkit-transition: height 0.3s;
+  }
+  .calendar_group ul {
+    height: 100%;
+  }
+  .calendar_group_li {
+    position: absolute;
+    top: 0;
+    left: px2vw(4px);
+    bottom: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    flexAlign();
+    flex-wrap: wrap;
+    background: white;
+    will-change: transform;
+  }
+  .calendar_item {
+    width: 14.13333335%;
+    flexContent();
+    flex-direction: column;
+  }
+  .calendar_item_disable {
+    background-color: disabled-bg-color;
+    opacity: 1;
+    cursor: not-allowed;
+    color: disabled-font-color;
+  }
+  .calendar_day {
+    width: px2vw(60px);
+    height: px2vw(60px);
+    border-radius: 50%;
+    fontSize(28px);
+    flexContent();
+    margin-bottom: px2vw(8px);
+  }
+  .calendar_first_today {
+    color: main-color;
+  }
+  .calendar_first_today span {
+    fontSize(20px);
+    margin-top: px2vw(3px);
+  }
+  .calendar_day_today {
+    background: bg-color;
+  }
+  .calendar_mark_circle {
+    border: 1px solid main-color;
+  }
+  .calendar_day_not {
+    color: disabled-font-color;
+  }
+  .calendar_day_checked {
+    background: main-color;
+    color: white;
+  }
+  .calendar_dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
 }

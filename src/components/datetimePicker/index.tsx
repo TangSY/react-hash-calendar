@@ -315,7 +315,7 @@ class ReactHashCalendar extends React.Component<
       checkedDate,
       language,
     } = this.state;
-
+    console.log('render -> calendarContentHeight', calendarContentHeight);
     const dateNode: React.ReactNode = (
       <span
         className={classNames('calendar_title_date_year', {

@@ -117,11 +117,12 @@ class Examples extends React.Component<{}, State, {}> {
       <div>
         <button onClick={this.showCalendar}>显示</button>
         <ReactHashCalendar
-          isShowWeekView={true}
           pickerType="datetime"
+          model="dialog"
           disabledScroll=""
+          isShowWeekView={false}
           showTodayButton={true}
-          disabledWeekView={true}
+          disabledWeekView={false}
           disabledDate={this.disabledDate}
           isShowAction={true}
           lang="CN"
@@ -129,7 +130,6 @@ class Examples extends React.Component<{}, State, {}> {
           onVisibleChange={this.handleVisibleChange}
           dateClickCallback={this.dateClick}
           dateConfirmCallback={this.dateConfirm}
-          model="dialog"
           format="YY/MM/DD hh:mm"
           markDate={markDate}
           scrollChangeDate={true}
