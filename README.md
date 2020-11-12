@@ -23,9 +23,9 @@ npm i react-hash-calendar
 
 # Demo
 
-![demo_qrcode.png](https://www.hxkj.vip/demo/reat-calendar/demo.png)
+![demo_qrcode.png](https://www.hxkj.vip/demo/react-calendar/demo.png)
 
-或者请用浏览器的手机模式查看：[https://www.hxkj.vip/demo/reat-calendar/](https://www.hxkj.vip/demo/reat-calendar/)
+或者请用浏览器的手机模式查看：[https://www.hxkj.vip/demo/react-calendar/](https://www.hxkj.vip/demo/react-calendar/)
 
 - 🎉 觉得好用可以给一个 star 哦~~ 🎉
 
