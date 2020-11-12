@@ -162,6 +162,7 @@ class ReactHashCalendar extends React.Component<
   show = () => {
     const { onVisibleChange } = this.props;
     this.setState({ isShowDatetimePicker: true });
+    this.setState({ isShowCalendar: true });
     onVisibleChange && onVisibleChange(true);
   };
 
