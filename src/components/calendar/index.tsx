@@ -1006,9 +1006,9 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
                 isCurrentMonthDay: !this.isNotCurrentMonthDay(date, mIndex),
                 isFirstDayOfMonth: this.isFirstDayOfMonth(date, mIndex),
               })) ||
-            this.isFirstDayOfMonth(date, mIndex)
-              ? language.MONTH && language.MONTH[date.month]
-              : date.day}
+              (this.isFirstDayOfMonth(date, mIndex)
+                ? language.MONTH && language.MONTH[date.month]
+                : date.day)}
           </div>
           <div
             style={{ background: this.markDateColor(date, 'dot') }}

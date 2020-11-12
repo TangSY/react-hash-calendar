@@ -71,6 +71,18 @@ type Props = {
   todaySlot?: React.ReactNode;
   confirmSlot?: React.ReactNode;
   onVisibleChange?: (visible: boolean) => void;
+  weekSlot?: (week: string) => React.ReactNode;
+  daySlot?: (
+    date: IDate,
+    extendAttr: {
+      isMarked: boolean;
+      isDisabledDate: boolean;
+      isToday: boolean;
+      isChecked: boolean;
+      isCurrentMonthDay: boolean;
+      isFirstDayOfMonth: boolean;
+    }
+  ) => React.ReactNode;
   slideChangeCallback?: (direction: string) => void;
   touchStartCallback?: (e: React.TouchEvent) => void;
   touchMoveCallback?: (e: React.TouchEvent) => void;
