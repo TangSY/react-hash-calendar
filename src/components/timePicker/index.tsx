@@ -10,9 +10,9 @@ const defaultProps = {
   minuteStep: 1,
 };
 
-type Props = { timeChangeCallback?: (date: ITime) => void } & Partial<
-  typeof defaultProps
->;
+export type TimePickerProps = {
+  timeChangeCallback?: (date: ITime) => void;
+} & Partial<typeof defaultProps>;
 
 const state = {
   hashID: [''],
@@ -38,7 +38,7 @@ type State = {
 } & typeof state;
 
 class TimePicker extends React.Component<
-  Props & typeof defaultProps,
+  TimePickerProps & typeof defaultProps,
   State,
   {}
 > {
@@ -69,7 +69,10 @@ class TimePicker extends React.Component<
     }
   }
 
-  componentDidUpdate(prevProps: Props & typeof defaultProps, prevState: State) {
+  componentDidUpdate(
+    prevProps: TimePickerProps & typeof defaultProps,
+    prevState: State
+  ) {
     const { show: showPrev } = prevProps;
     const { show } = this.props;
 
@@ -84,12 +87,12 @@ class TimePicker extends React.Component<
     const { minuteStep } = this.props;
     const { checkedDate, hashClass, hashID } = this.state;
 
-    let hours = [];
-    let timeArray = [];
+    let hours: number[] = [];
+    let timeArray: number[][] = [];
     for (let i = 0; i < 24; i++) {
       hours.push(i);
     }
-    let minutes = [];
+    let minutes: number[] = [];
     for (let i = 0; i < 60; i++) {
       if (i % minuteStep === 0) {
         minutes.push(i);

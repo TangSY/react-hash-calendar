@@ -1,5 +1,8 @@
-import ReactHashCalendar from '../components/datetimePicker';
+// import { ReactHashCalendar } from '../components';
 import React from 'react';
+
+const ReactHashCalendar = require('../components').ReactHashCalendar;
+console.log(require('../components'));
 
 const state = {
   defaultDatetime: new Date(),

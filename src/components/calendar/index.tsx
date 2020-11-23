@@ -83,7 +83,7 @@ const state = {
   markDateTypeObj: {}, // 所有被标记的日期所对应的标记类型
 };
 
-type Props = {
+export type CalendarProps = {
   markDate?: any[];
   disabledScroll: typeof DIRECTION_LIST[number];
   lang: 'CN' | 'EN';
@@ -116,7 +116,11 @@ type State = {
   calendarItemRef?: HTMLDivElement;
 } & typeof state;
 
-class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
+class Calendar extends React.Component<
+  CalendarProps & typeof defaultProps,
+  State,
+  {}
+> {
   static defaultProps = defaultProps;
   public state: State = state;
 
@@ -181,7 +185,10 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     });
   }
 
-  componentDidUpdate(prevProps: Props & typeof defaultProps, prevState: State) {
+  componentDidUpdate(
+    prevProps: CalendarProps & typeof defaultProps,
+    prevState: State
+  ) {
     const {
       markDate: prevMarkDate,
       show: prevShow,
@@ -355,7 +362,7 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
       calendarGroupHeight: calendarItemHeight,
     });
 
-    let currentWeek = [];
+    let currentWeek: IDate[] = [];
     let sliceStart = lastLine * 7;
     console.log('showWeek -> lastLine', lastLine);
     let sliceEnd = sliceStart + 7;
@@ -805,7 +812,7 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     let secondMonth = this.calculateCalendarOfMonth(year, month);
     let thirdMonth = this.calculateCalendarOfMonth(nextMonthYear, nextMonth);
 
-    let calendarOfMonth = [];
+    let calendarOfMonth: IDate[][] = [];
     calendarOfMonth.push(firstMonth, secondMonth, thirdMonth);
 
     this.setState({
@@ -839,7 +846,7 @@ class Calendar extends React.Component<Props & typeof defaultProps, State, {}> {
     year: number = yearNow,
     month: number = monthNow
   ) => {
-    let calendarOfCurrentMonth = [];
+    let calendarOfCurrentMonth: IDate[] = [];
 
     const { weekStartIndex, calendarDaysTotalLength } = this.state;
 

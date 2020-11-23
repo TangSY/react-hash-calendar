@@ -61,7 +61,7 @@ const state = {
   firstTimes: true, // 第一次触发
 };
 
-type Props = {
+export type DateTimeProps = {
   weekStart: typeof WEEK_LIST[number];
   disabledScroll: typeof DIRECTION_LIST[number];
   markDate?: any[];
@@ -93,7 +93,7 @@ type Props = {
 type State = { calendarRef?: any } & typeof state;
 
 class ReactHashCalendar extends React.Component<
-  Props & typeof defaultProps,
+  DateTimeProps & typeof defaultProps,
   State,
   {}
 > {
@@ -115,7 +115,7 @@ class ReactHashCalendar extends React.Component<
     });
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: DateTimeProps) {
     const { pickerType } = prevProps;
     const { isShowAction, visible } = this.props;
     const {
