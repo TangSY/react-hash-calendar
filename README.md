@@ -1,3 +1,5 @@
+[![version](https://img.shields.io/npm/v/react-hash-calendar.svg)](https://www.npmjs.com/package/react-hash-calendar)
+[![download](https://img.shields.io/npm/dt/react-hash-calendar.svg)](https://www.npmjs.com/package/react-hash-calendar)
 ![license](https://img.shields.io/badge/license-MIT-blue.svg)
 [![author](https://img.shields.io/badge/author-HashTang-orange.svg)](https://www.hxkj.vip)
 
@@ -9,7 +11,6 @@
 
 # react-hash-calendar
 
-- 基于 vue 2.X 开发的日历组件
 - 支持手势滑动操作
 - 上下滑动 切换 周/月 模式
   > 【周模式中】 左右滑动可切换 上一周/下一周
