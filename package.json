@@ -1,19 +1,19 @@
 {
   "name": "react-hash-calendar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "HashTang",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TangSY/reat-hash-calendar.git"
+    "url": "https://github.com/TangSY/react-hash-calendar.git"
   },
   "bugs": {
-    "url": "https://github.com/TangSY/reat-hash-calendar/issues"
+    "url": "https://github.com/TangSY/react-hash-calendar/issues"
   },
   "homepage": "https://www.hxkj.vip",
   "license": "MIT",
-  "description": "reat 周 月 时间选择器",
+  "description": "react 周 月 时间选择器",
   "main": "lib/index.js",
-  "keyword": "reat-hash-calendar calendar date-picker datetime-picker time-picker week-picker",
+  "keyword": "react-hash-calendar calendar date-picker datetime-picker time-picker week-picker",
   "private": false,
   "devDependencies": {
     "@types/classnames": "^2.2.10",
