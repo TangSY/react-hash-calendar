@@ -3,11 +3,15 @@
 ![license](https://img.shields.io/badge/license-MIT-blue.svg)
 [![author](https://img.shields.io/badge/author-HashTang-orange.svg)](https://www.hxkj.vip)
 
+简体中文 | [English](https://github.com/TangSY/react-hash-calendar/blob/master/README-en_US.md)
+
 # 按照惯例，先上效果图
 
 ![calendar.gif](https://www.hxkj.vip/demo/calendar/calendar.gif)
 ![dot.gif](https://www.hxkj.vip/demo/calendar/dot.gif)
 ![week.gif](https://www.hxkj.vip/demo/calendar/week.gif)
+
+vue 版本同款日历：[https://github.com/TangSY/vue-hash-calendar](https://github.com/TangSY/vue-hash-calendar)
 
 # react-hash-calendar
 
