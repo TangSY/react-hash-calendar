@@ -1,5 +1,4 @@
 #!/bin/bash
-npm version patch
 npm install
 npm run build
 cd dist
