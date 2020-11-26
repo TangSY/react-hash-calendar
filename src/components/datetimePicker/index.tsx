@@ -224,7 +224,6 @@ class ReactHashCalendar extends React.Component<
   };
 
   heightChange = (height: number) => {
-    console.log('heightChange -> height', height);
     const { firstTimes, calendarTitleHeight } = this.state;
     const { model } = this.props;
 
@@ -328,7 +327,6 @@ class ReactHashCalendar extends React.Component<
       checkedDate,
       language,
     } = this.state;
-    console.log('render -> calendarContentHeight', calendarContentHeight);
     const dateNode: React.ReactNode = (
       <span
         className={classNames('calendar_title_date_year', {

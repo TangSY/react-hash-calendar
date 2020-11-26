@@ -284,14 +284,6 @@ class Calendar extends React.Component<
       }
     }
 
-    console.log(
-      'Calendar -> componentDidUpdate -> prevCalendarGroupHeight',
-      prevCalendarGroupHeight
-    );
-    console.log(
-      'Calendar -> componentDidUpdate -> calendarGroupHeight',
-      calendarGroupHeight
-    );
     if (prevCalendarGroupHeight !== calendarGroupHeight) {
       heightCallback &&
         heightCallback(calendarGroupHeight + calendarWeekTitleHeight);
@@ -355,7 +347,6 @@ class Calendar extends React.Component<
     let indexOfLine = Math.ceil((dayIndexOfMonth + 1) / 7);
     let lastLine = indexOfLine - 1;
 
-    console.log('showWeek -> calendarItemHeight', calendarItemHeight);
     this.setState({
       calendarY: -(calendarItemHeight * lastLine),
       isShowWeek: true,
@@ -364,10 +355,8 @@ class Calendar extends React.Component<
 
     let currentWeek: IDate[] = [];
     let sliceStart = lastLine * 7;
-    console.log('showWeek -> lastLine', lastLine);
     let sliceEnd = sliceStart + 7;
     currentWeek = calendarOfMonth[1].slice(sliceStart, sliceEnd);
-    console.log('showWeek -> currentWeek', currentWeek);
 
     let _selectedDayIndex = 0;
     let _isLastWeekInCurrentMonth = false;
