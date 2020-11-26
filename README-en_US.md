@@ -27,6 +27,19 @@ The same calendar for Vue：[https://github.com/TangSY/vue-hash-calendar](https:
 ```
 npm i react-hash-calendar
 ```
+```
+import { ReactHashCalendar } from 'react-hash-calendar'
+
+function App () {
+  return (
+    <div className="App">
+      <ReactHashCalendar model="inline"></ReactHashCalendar>
+    </div>
+  );
+}
+
+export default App;
+```
 
 ## Demo
 
