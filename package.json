@@ -1,6 +1,6 @@
 {
   "name": "react-hash-calendar",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "HashTang",
   "repository": {
     "type": "git",
@@ -25,9 +25,11 @@
     "babel-loader": "^7.1.2",
     "babel-preset-react": "^6.24.1",
     "chalk": "^2.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^6.3.2",
     "css-loader": "^0.28.7",
     "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^4.5.0",
+    "html-webpack-plugin": "^3.2.0",
     "ora": "^1.3.0",
     "source-map-loader": "^0.2.1",
     "style-loader": "^0.18.2",
@@ -36,9 +38,11 @@
     "ts-loader": "^2.3.7",
     "typescript": "^3.7.2",
     "url-loader": "^4.1.1",
-    "webpack": "^3.6.0",
-    "webpack-dev-server": "^2.8.2",
-    "webpack-merge": "^4.1.0"
+    "webpack": "^4.42.0",
+    "webpack-bundle-analyzer": "^3.6.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3",
+    "webpack-merge": "^4.2.2"
   },
   "dependencies": {
     "classnames": "^2.2.6",
@@ -46,8 +50,9 @@
     "react-dom": "^16.0.0"
   },
   "scripts": {
-    "build": "node build/build.js",
-    "start": "webpack-dev-server --config=build/webpack.dev.conf"
+    "lib": "node build/build.js",
+    "start": "webpack-dev-server --config=build/webpack.dev.conf",
+    "build": "webpack --config=build/webpack.prod.conf"
   },
   "browserslist": {
     "production": [
