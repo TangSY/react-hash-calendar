@@ -1,7 +1,7 @@
 #!/bin/bash
 npm install
 npm run build
-cd ./dist
+cd ../dist
 ls
 # tar -zcvf calendar.tar.gz *
 # mv calendar.tar.gz /usr/share/nginx/hxkj/dist/demo/react-calendar/
