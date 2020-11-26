@@ -25,6 +25,19 @@ vue 版本同款日历：[https://github.com/TangSY/vue-hash-calendar](https://g
 ```
 npm i react-hash-calendar
 ```
+```
+import { ReactHashCalendar } from 'react-hash-calendar'
+
+function App () {
+  return (
+    <div className="App">
+      <ReactHashCalendar model="inline"></ReactHashCalendar>
+    </div>
+  );
+}
+
+export default App;
+```
 
 # Demo
 
