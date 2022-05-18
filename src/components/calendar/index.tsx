@@ -137,7 +137,9 @@ class Calendar extends React.Component<
 
     const language = languageUtil[lang];
     const calendarWeek = language.WEEK;
-    const weekStartIndex = weekArray.indexOf(weekStart);
+    const lowerWeek = weekStart.toLowerCase();
+    const upperFirstCode = lowerWeek.charAt(0).toUpperCase() + lowerWeek.slice(1) as CalendarProps["weekStart"];
+    const weekStartIndex = weekArray.indexOf(upperFirstCode);
     const start = calendarWeek.slice(weekStartIndex);
     const end = calendarWeek.slice(0, weekStartIndex);
 
