@@ -1,15 +1,15 @@
-import React from 'react';
-import languageUtil from '../../language';
-import { IDate } from '../../utils/type';
+import React from "react";
+import languageUtil from "../../language";
+import { IDate } from "../../utils/type";
 import {
   SCROLL_DIRECTION_LIST,
   WEEK_LIST,
   DIRECTION_LIST,
-} from '../../utils/constant';
-import { eq } from '../../utils/eq';
-import { formatDate } from '../../utils/util';
-import classNames from 'classnames';
-import './style.styl';
+} from "../../utils/constant";
+import { eq } from "../../utils/eq";
+import { formatDate } from "../../utils/util";
+import classNames from "classnames";
+import "./style.styl";
 
 const yearNow = new Date().getFullYear();
 const monthNow = new Date().getMonth();
@@ -23,18 +23,18 @@ const defaultProps = {
   disabledWeekView: false, // 禁用周视图
   isShowWeekView: false, // 是否展示周视图
   scrollChangeDate: true, // 滑动的时候，是否触发改变日期
-  firstDayOfMonthClassName: '', // 每月第一天的 className
-  todayClassName: '', // 当天日期的 className
-  checkedDayClassName: '', // 日期被选中时的 className
-  disabledClassName: '', // 日期被禁用时的 className
-  notCurrentMonthDayClassName: '', // 不是当前展示月份日期的 className(例如日历前面几天与后面几天灰色部分)
+  firstDayOfMonthClassName: "", // 每月第一天的 className
+  todayClassName: "", // 当天日期的 className
+  checkedDayClassName: "", // 日期被选中时的 className
+  disabledClassName: "", // 日期被禁用时的 className
+  notCurrentMonthDayClassName: "", // 不是当前展示月份日期的 className(例如日历前面几天与后面几天灰色部分)
   calendarTitleHeight: 60, // 操作栏高度
   defaultDate: new Date(),
-  weekStart: 'Sunday',
-  markType: 'dot', // 日期标记类型
+  weekStart: "Sunday",
+  markType: "dot", // 日期标记类型
   disabledDate: (date: Date) => false, // 禁用的日期
-  disabledScroll: '', // 禁止滑动，可选值【'left', 'right', 'up', 'down', 'horizontal', 'vertical', 'all', ''】
-  lang: 'CN', // 使用的语言包
+  disabledScroll: "", // 禁止滑动，可选值【'left', 'right', 'up', 'down', 'horizontal', 'vertical', 'all', ''】
+  lang: "CN", // 使用的语言包
 };
 
 interface ICalendarOfMonthChild {
@@ -46,12 +46,12 @@ interface ICalendarOfMonth {
 }
 
 const state = {
-  language: { WEEK: [''], MONTH: [''] }, // 使用的语言包
+  language: { WEEK: [""], MONTH: [""] }, // 使用的语言包
   currentChangeIsScroll: false, // 改变当前日期的方式是否为滑动事件
   yearOfCurrentShow: yearNow, // 当前日历展示的年份
   monthOfCurrentShow: monthNow, // 当前日历展示的月份
   weekArray: WEEK_LIST, // 星期数组
-  calendarWeek: ['日', '一', '二', '三', '四', '五', '六'], // 日历对应的星期
+  calendarWeek: ["日", "一", "二", "三", "四", "五", "六"], // 日历对应的星期
   calendarOfMonth: [[{ year: yearNow, month: monthNow, day: dayNow }]], // 月份对应的日历表
   calendarOfMonthShow: [[{ year: yearNow, month: monthNow, day: dayNow }]], // 月份对应的日历表
   calendarDaysTotalLength: 42, // 日历表展示的总天数  6行7列
@@ -86,7 +86,7 @@ const state = {
 export type CalendarProps = {
   markDate?: any[];
   disabledScroll: typeof DIRECTION_LIST[number];
-  lang: 'CN' | 'EN';
+  lang: "CN" | "EN";
   weekStart: typeof WEEK_LIST[number];
   onRef?: (ref: any) => void;
   weekSlot?: (week: string) => React.ReactNode;
@@ -138,7 +138,8 @@ class Calendar extends React.Component<
     const language = languageUtil[lang];
     const calendarWeek = language.WEEK;
     const lowerWeek = weekStart.toLowerCase();
-    const upperFirstCode = lowerWeek.charAt(0).toUpperCase() + lowerWeek.slice(1) as CalendarProps["weekStart"];
+    const upperFirstCode = (lowerWeek.charAt(0).toUpperCase() +
+      lowerWeek.slice(1)) as CalendarProps["weekStart"];
     const weekStartIndex = weekArray.indexOf(upperFirstCode);
     const start = calendarWeek.slice(weekStartIndex);
     const end = calendarWeek.slice(0, weekStartIndex);
@@ -232,15 +233,15 @@ class Calendar extends React.Component<
     ) {
       markDate.forEach((item, index) => {
         if (!item.color) {
-          let obj: { color?: string; date?: any[] } = { color: '', date: [] };
-          obj.color = '#1c71fb';
-          if (typeof item === 'string' || typeof item === 'number') {
+          let obj: { color?: string; date?: any[] } = { color: "", date: [] };
+          obj.color = "#1c71fb";
+          if (typeof item === "string" || typeof item === "number") {
             item = [item];
           }
           obj.date = item || [];
           markDate[index] = obj;
         }
-        markDate[index].type = item.type || markType || '';
+        markDate[index].type = item.type || markType || "";
 
         markDate[index].date = this.dateFormat(markDate[index].date);
       });
@@ -296,7 +297,7 @@ class Calendar extends React.Component<
   // 日期格式转换
   dateFormat(dateArr: string[]) {
     dateArr.forEach((date, index) => {
-      dateArr[index] = formatDate(date, 'YY/MM/DD');
+      dateArr[index] = formatDate(date, "YY/MM/DD");
     });
 
     return dateArr;
@@ -324,11 +325,11 @@ class Calendar extends React.Component<
   };
 
   showWeek = (checkedDate?: IDate) => {
-    function stopScrolling( touchEvent ) {
-      touchEvent.preventDefault()
+    function stopScrolling(touchEvent) {
+      touchEvent.preventDefault();
     }
-  
-    document.addEventListener( 'touchstart' , stopScrolling , {passive:false} );
+
+    document.addEventListener("touchstart", stopScrolling, { passive: false });
     const {
       calendarOfMonth,
       checkedDate: _checkedDate,
@@ -425,7 +426,7 @@ class Calendar extends React.Component<
     }
     this.state.calendarOfMonthShow[0].splice(sliceStart, 7, ...lastWeek);
     this.state.calendarOfMonthShow[2].splice(sliceStart, 7, ...nextWeek);
-    document.addEventListener( 'touchmove' , stopScrolling , {passive:false} );
+    document.addEventListener("touchmove", stopScrolling, { passive: false });
     this.setState({
       nextWeek,
       isNextWeekInCurrentMonth: _isNextWeekInCurrentMonth,
@@ -433,11 +434,11 @@ class Calendar extends React.Component<
   };
 
   showMonth = () => {
-    function stopScrolling( touchEvent ) {
-      touchEvent.preventDefault()
+    function stopScrolling(touchEvent) {
+      touchEvent.preventDefault();
     }
-  
-    document.addEventListener( 'touchstart' , stopScrolling , {passive:false} );
+
+    document.addEventListener("touchstart", stopScrolling, { passive: false });
     const { checkedDate, calendarItemRef } = this.state;
 
     const calendarItemHeight =
@@ -450,7 +451,7 @@ class Calendar extends React.Component<
       isNextWeekInCurrentMonth: false,
       calendarGroupHeight: calendarItemHeight * 6,
     });
-    document.addEventListener( 'touchmove' , stopScrolling , {passive:false} );
+    document.addEventListener("touchmove", stopScrolling, { passive: false });
     this.calculateCalendarOfThreeMonth(checkedDate.year, checkedDate.month);
   };
 
@@ -492,11 +493,8 @@ class Calendar extends React.Component<
   touchMove = (event: React.TouchEvent) => {
     event.stopPropagation();
 
-    const {
-      touchStartPositionX,
-      touchStartPositionY,
-      calendarRef,
-    } = this.state;
+    const { touchStartPositionX, touchStartPositionY, calendarRef } =
+      this.state;
     const calendarHeight = (calendarRef && calendarRef.offsetHeight) || 0;
     const calendarWidth = (calendarRef && calendarRef.offsetWidth) || 0;
     const { disabledWeekView, touchMoveCallback } = this.props;
@@ -508,8 +506,8 @@ class Calendar extends React.Component<
 
     if (Math.abs(moveX) > Math.abs(moveY)) {
       if (
-        (moveX < 0 && !this.isCanScroll('left')) ||
-        (moveX > 0 && !this.isCanScroll('right'))
+        (moveX < 0 && !this.isCanScroll("left")) ||
+        (moveX > 0 && !this.isCanScroll("right"))
       ) {
         return;
       }
@@ -519,8 +517,8 @@ class Calendar extends React.Component<
       // 禁用周视图（禁止上下滑动）
       if (
         disabledWeekView ||
-        (moveY < 0 && !this.isCanScroll('up')) ||
-        (moveY > 0 && !this.isCanScroll('down'))
+        (moveY < 0 && !this.isCanScroll("up")) ||
+        (moveY > 0 && !this.isCanScroll("down"))
       ) {
         return;
       }
@@ -540,7 +538,7 @@ class Calendar extends React.Component<
     if (Math.abs(touch.x) > Math.abs(touch.y) && Math.abs(touch.x) > 0.2) {
       this.setState({ currentChangeIsScroll: true }, () => {
         if (touch.x > 0) {
-          slideChangeCallback && slideChangeCallback('right');
+          slideChangeCallback && slideChangeCallback("right");
           this.getLastMonth();
           if (isShowWeek) {
             setTimeout(() => {
@@ -551,7 +549,7 @@ class Calendar extends React.Component<
             }, transitionDuration * 1000);
           }
         } else if (touch.x < 0) {
-          slideChangeCallback && slideChangeCallback('left');
+          slideChangeCallback && slideChangeCallback("left");
 
           this.getNextMonth();
           if (isShowWeek) {
@@ -571,11 +569,11 @@ class Calendar extends React.Component<
       Math.abs(touch.y * calendarHeight) > 50
     ) {
       if (touch.y > 0 && isShowWeek) {
-        slideChangeCallback && slideChangeCallback('down');
+        slideChangeCallback && slideChangeCallback("down");
 
         this.showMonth();
       } else if (touch.y < 0 && !isShowWeek) {
-        slideChangeCallback && slideChangeCallback('up');
+        slideChangeCallback && slideChangeCallback("up");
 
         this.showWeek();
       }
@@ -628,6 +626,7 @@ class Calendar extends React.Component<
       lastMonthYear,
       lastMonth,
       isLastWeekInCurrentMonth,
+      isShowWeek,
     } = this.state;
 
     this.setState((preState) => ({
@@ -639,6 +638,10 @@ class Calendar extends React.Component<
     if (!isLastWeekInCurrentMonth) {
       _yearOfCurrentShow = lastMonthYear;
       _monthOfCurrentShow = lastMonth;
+    }
+
+    if (isShowWeek && isLastWeekInCurrentMonth) {
+      return null;
     }
 
     this.setState({
@@ -657,6 +660,7 @@ class Calendar extends React.Component<
       nextMonthYear,
       nextMonth,
       isNextWeekInCurrentMonth,
+      isShowWeek,
     } = this.state;
 
     this.setState((preState) => ({
@@ -668,6 +672,10 @@ class Calendar extends React.Component<
     if (!isNextWeekInCurrentMonth) {
       _yearOfCurrentShow = nextMonthYear;
       _monthOfCurrentShow = nextMonth;
+    }
+
+    if (isShowWeek && isNextWeekInCurrentMonth) {
+      return null;
     }
 
     this.setState({
@@ -682,10 +690,10 @@ class Calendar extends React.Component<
   isCanScroll = (dire: typeof SCROLL_DIRECTION_LIST[number]): boolean => {
     const { disabledScroll } = this.props;
     const scrollObj = {
-      up: ['all', 'up', 'vertical'],
-      down: ['all', 'down', 'vertical'],
-      left: ['all', 'left', 'horizontal'],
-      right: ['all', 'right', 'horizontal'],
+      up: ["all", "up", "vertical"],
+      down: ["all", "down", "vertical"],
+      left: ["all", "left", "horizontal"],
+      right: ["all", "right", "horizontal"],
     };
 
     let checkedScrollArr = scrollObj[dire];
@@ -723,16 +731,16 @@ class Calendar extends React.Component<
     let dateString = `${date.year}/${this.fillNumber(
       date.month + 1
     )}/${this.fillNumber(date.day)}`;
-    let markDateTypeString = markDateTypeObj[dateString] || '';
+    let markDateTypeString = markDateTypeObj[dateString] || "";
 
-    if (markDateTypeString.indexOf(type) === -1) return '';
+    if (markDateTypeString.indexOf(type) === -1) return "";
 
     return markDateColorObj[dateString];
   };
 
   // 小于10，在前面补0
   fillNumber = (val: number) => {
-    return val > 9 ? val : '0' + val;
+    return val > 9 ? val : "0" + val;
   };
 
   isToday = (date: IDate): boolean => {
@@ -795,12 +803,8 @@ class Calendar extends React.Component<
     const { currentChangeIsScroll, checkedDate } = this.state;
     const { scrollChangeDate } = this.props;
 
-    const {
-      lastMonthYear,
-      lastMonth,
-      nextMonthYear,
-      nextMonth,
-    } = this.getNearYearAndMonth(year, month);
+    const { lastMonthYear, lastMonth, nextMonthYear, nextMonth } =
+      this.getNearYearAndMonth(year, month);
 
     this.setState({
       lastMonthYear,
@@ -851,12 +855,8 @@ class Calendar extends React.Component<
 
     const { weekStartIndex, calendarDaysTotalLength } = this.state;
 
-    const {
-      lastMonthYear,
-      lastMonth,
-      nextMonthYear,
-      nextMonth,
-    } = this.getNearYearAndMonth(year, month);
+    const { lastMonthYear, lastMonth, nextMonthYear, nextMonth } =
+      this.getNearYearAndMonth(year, month);
 
     // 如果当月第一天不是指定的开始星期名称，则在前面补齐上个月的日期
     let dayOfWeek = this.getDayOfWeek(year, month);
@@ -977,9 +977,9 @@ class Calendar extends React.Component<
       return item.map((date, index) => (
         <div
           className={classNames(
-            'calendar_item',
+            "calendar_item",
             this.formatDisabledDate(date) &&
-              (disabledClassName || 'calendar_item_disable')
+              (disabledClassName || "calendar_item_disable")
           )}
           ref={this.calendarItemRef}
           key={`date-${index}`}
@@ -987,26 +987,26 @@ class Calendar extends React.Component<
         >
           <div
             className={classNames(
-              'calendar_day',
+              "calendar_day",
               this.isFirstDayOfMonth(date, mIndex)
-                ? firstDayOfMonthClassName || 'calendar_first_today'
-                : '',
-              this.isToday(date) ? todayClassName || 'calendar_day_today' : '',
+                ? firstDayOfMonthClassName || "calendar_first_today"
+                : "",
+              this.isToday(date) ? todayClassName || "calendar_day_today" : "",
               this.isCheckedDay(date)
-                ? checkedDayClassName || 'calendar_day_checked'
-                : '',
+                ? checkedDayClassName || "calendar_day_checked"
+                : "",
               this.isNotCurrentMonthDay(date, mIndex)
-                ? notCurrentMonthDayClassName || 'calendar_day_not'
-                : '',
-              this.markDateColor(date, 'circle') ? 'calendar_mark_circle' : ''
+                ? notCurrentMonthDayClassName || "calendar_day_not"
+                : "",
+              this.markDateColor(date, "circle") ? "calendar_mark_circle" : ""
             )}
-            style={{ borderColor: this.markDateColor(date, 'circle') }}
+            style={{ borderColor: this.markDateColor(date, "circle") }}
           >
             {(daySlot &&
               daySlot(date, {
                 isMarked: !!(
-                  this.markDateColor(date, 'circle') ||
-                  this.markDateColor(date, 'dot')
+                  this.markDateColor(date, "circle") ||
+                  this.markDateColor(date, "dot")
                 ),
                 isDisabledDate: this.formatDisabledDate(date),
                 isToday: this.isToday(date),
@@ -1019,7 +1019,7 @@ class Calendar extends React.Component<
                 : date.day)}
           </div>
           <div
-            style={{ background: this.markDateColor(date, 'dot') }}
+            style={{ background: this.markDateColor(date, "dot") }}
             className="calendar_dot"
           ></div>
         </div>
@@ -1061,7 +1061,7 @@ class Calendar extends React.Component<
     return show ? (
       <div
         className="calendar_body"
-        style={{ marginTop: calendarTitleHeight + 'px' }}
+        style={{ marginTop: calendarTitleHeight + "px" }}
       >
         {weekNode}
         {calendarBodyNode}
